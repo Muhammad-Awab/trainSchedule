@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE_NAME = "willbla/train-schedule"
     }
     tools {
-        // Ensure 'Java 11' matches the name configured in Jenkins Global Tool Configuration
+        // Use the JDK installation name configured in Jenkins
         jdk 'Java 11'
     }
     stages {
