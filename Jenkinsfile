@@ -3,7 +3,7 @@ pipeline {
     environment {
         // Be sure to replace "willbla" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "willbla/train-schedule"
-        JAVA_HOME = "/path/to/java11"  // Set this to the correct path of Java 11 on your Jenkins server
+        JAVA_HOME = "/usr/lib/jvm/java-11-openjdk-amd64/bin/java"  // Set this to the correct path of Java 11 on your Jenkins server
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
     stages {
