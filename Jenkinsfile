@@ -39,6 +39,7 @@ pipeline {
                         withAWS(credentials: 'awscred', region: 'us-east-1') {
                             sh 'aws eks  update-kubeconfig --region us-east-1 --name web-quickstart'
                             sh 'kubectl get ns'
+                            sh 'kubectl apply -f  train-schedule-kube-canary.yml'
                         }
                     }
                 }
