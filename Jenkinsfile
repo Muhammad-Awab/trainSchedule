@@ -15,16 +15,16 @@ pipeline {
         }
         
         stage('Push Image'){
-            steps{
-                withCredentials([string(credentialsId: 'DPWD', variable: 'DPWD')]) {
+            
+                withDockerRegistry(credentialsId: 'docker_hub_login', url: ' https://index.docker.io/v2/') {
                    sh """
-                   echo \${DPWD} | docker login -u 82002 --password-stdin
+                   docker push awab82002/maven:latest
                    """
                  }
                
-                sh 'docker push awab82002/maven:latest'
+            
             }
-        }
+        
         
         stage('CanaryDeploy') {
             when {
