@@ -1,20 +1,22 @@
 pipeline {
     agent any
     environment {
-        // Be sure to replace "awab82002" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "awab82002/maven"
+        DOCKER_REGISTRY = "https://registry.hub.docker.com"
     }
     stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Muhammad-Awab/trainSchedule.git'
+            }
+        }
         stage('Build Docker Image') {
             when {
                 branch 'master'
             }
             steps {
                 script {
-                    def app = docker.build(DOCKER_IMAGE_NAME)
-                    app.inside {
-                        sh 'echo Hello, World!'
-                    }
+                    def app = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -24,9 +26,9 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push("latest")
+                    docker.withRegistry(DOCKER_REGISTRY, 'docker_hub_login') {
+                        docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
+                        docker.image("${DOCKER_IMAGE_NAME}:latest").push()
                     }
                 }
             }
@@ -35,7 +37,7 @@ pipeline {
             when {
                 branch 'master'
             }
-            environment { 
+            environment {
                 CANARY_REPLICAS = 1
             }
             steps {
@@ -52,7 +54,7 @@ pipeline {
             when {
                 branch 'master'
             }
-            environment { 
+            environment {
                 CANARY_REPLICAS = 0
             }
             steps {
@@ -71,6 +73,12 @@ pipeline {
                     )
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning up...'
+            cleanWs()
         }
     }
 }
