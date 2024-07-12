@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('GetCode') {
             steps {
-                git branch: 'master', url: 'https://github.com/Muhammad-Awab/trainSchedule.git'
+                git 'https://github.com/Muhammad-Awab/trainSchedule.git'
             }
         }
         
