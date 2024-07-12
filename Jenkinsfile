@@ -55,6 +55,7 @@ pipeline {
                         withAWS(credentials: 'awscred', region: 'us-east-1') {
                             sh '''
                                 echo "Deploying to EKS production environment..."
+                                aws eks  update-kubeconfig --region us-east-1 --name web-quickstart
                                 kubectl get ns
                                 kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-prod.yml
                             '''
