@@ -15,16 +15,15 @@ pipeline {
         }
         
         stage('Push Image'){
-            
-                withDockerRegistry(credentialsId: 'docker_hub_login', url: ' https://index.docker.io/v2/') {
-                   sh """
-                   docker push awab82002/maven:latest
-                   """
-                 }
-               
-            
+            steps {
+                script {
+                    // Use withDockerRegistry to push the Docker image
+                    withDockerRegistry(credentialsId: 'docker_hub_login', url: 'https://index.docker.io/v2/') {
+                        sh 'docker push awab82002/maven:latest'
+                    }
+                }
             }
-        
+        }
         
         stage('CanaryDeploy') {
             when {
