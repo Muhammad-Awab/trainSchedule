@@ -17,7 +17,8 @@ pipeline {
         stage('Push Image'){
             steps{
                 withCredentials([string(credentialsId: 'HubPWd', variable: 'HubPWd')]) {
-                    sh "docker login -u 82002 -p ${HubPWd}"
+                    sh "echo ${HubPWd} | docker login -u 82002 --password-stdin"
+                    
                 }
                 sh 'docker push awab82002/maven:latest'
             }
