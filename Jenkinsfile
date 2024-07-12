@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1' // Set your AWS region
+        KUBECONFIG = '/home/ubuntu/.kube/' // Set the path to your kubeconfig file
+    }
+
     stages {
         stage('Get Code') {
             steps {
@@ -33,9 +38,12 @@ pipeline {
                 script {
                     echo 'Performing canary deployment...'
                     // Load Kubernetes configuration from secrets
-
                     withCredentials([file(credentialsId: 'kubecon', variable: 'KUBECONFIG')]) {
-                       sh 'kubectl get ns'
+                        withAWS(credentials: 'your-aws-credentials-id', region: 'us-east-1') {
+                            sh 'env' // Print environment variables for debugging
+                            sh 'cat $KUBECONFIG' // Print kubeconfig file content for debugging
+                            sh 'kubectl get ns'
+                        }
                     }
                 }
             }
@@ -49,11 +57,15 @@ pipeline {
                     echo 'Performing production deployment...'
                     // Load Kubernetes configuration from secrets
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh '''
-                            echo "Deploying to EKS production environment..."
-                            kubectl get ns
-                            kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-prod.yml
-                        '''
+                        withAWS(credentials: 'awscred', region: 'us-east-1') {
+                            sh 'env' // Print environment variables for debugging
+                            sh 'cat $KUBECONFIG' // Print kubeconfig file content for debugging
+                            sh '''
+                                echo "Deploying to EKS production environment..."
+                                kubectl get ns
+                                kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-prod.yml
+                            '''
+                        }
                     }
                 }
             }
