@@ -46,27 +46,6 @@ pipeline {
             }
         }
 
-        stage('Deploy to Production') {
-            steps {
-                script {
-                    input 'Deploy to Production?'
-                    milestone(1)
-                    echo 'Performing production deployment...'
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
-                        sh 'cp $KUBECONFIG_FILE $KUBECONFIG'
-                        withAWS(credentials: 'awscred', region: 'us-east-1') {
-                            sh '''
-                                echo "Deploying to EKS production environment..."
-                                aws eks  update-kubeconfig --region us-east-1 --name web-quickstart
-                                kubectl get ns
-                                kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-prod.yml
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     post {
         always {
