@@ -2,9 +2,7 @@ pipeline {
     agent any
     
     tools {
-        maven 'Maven'
-        // Add Docker tool definition if not already configured
-        // docker 'Docker'
+
     }
     
     stages {
