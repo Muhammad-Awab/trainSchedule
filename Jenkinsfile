@@ -29,13 +29,11 @@ pipeline {
         }
 
         stage('Canary Deploy') {
-            when {
-                branch 'master'
-            }
             steps {
                 script {
                     echo 'Performing canary deployment...'
                     // Load Kubernetes configuration from secrets
+                       sh "kubectl get ns"
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                         sh '''
                             echo "Deploying to EKS with canary configuration..."
