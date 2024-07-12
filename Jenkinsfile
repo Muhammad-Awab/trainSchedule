@@ -1,9 +1,7 @@
 pipeline {
     agent any
     
-    tools {
 
-    }
     
     stages {
         stage('GetCode') {
