@@ -33,12 +33,9 @@ pipeline {
                 script {
                     echo 'Performing canary deployment...'
                     // Load Kubernetes configuration from secrets
-                       sh "kubectl get ns"
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh '''
-                            echo "Deploying to EKS with canary configuration..."
-                            kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-canary.yml
-                        '''
+
+                    withCredentials([file(credentialsId: 'kubecon', variable: 'KUBECONFIG')]) {
+                       sh 'kubectl get ns'
                     }
                 }
             }
