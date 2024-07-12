@@ -34,8 +34,14 @@ pipeline {
             }
             steps {
                 script {
-                    // Add your Kubernetes deployment script here for canary deployment
                     echo 'Performing canary deployment...'
+                    // Load Kubernetes configuration from secrets
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            echo "Deploying to EKS with canary configuration..."
+                            kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-canary.yml
+                        '''
+                    }
                 }
             }
         }
@@ -48,8 +54,15 @@ pipeline {
                 script {
                     input 'Deploy to Production?'
                     milestone(1)
-                    // Add your Kubernetes deployment script here for production deployment
                     echo 'Performing production deployment...'
+                    // Load Kubernetes configuration from secrets
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            echo "Deploying to EKS production environment..."
+                            kubectl get ns
+                            kubectl --kubeconfig=$KUBECONFIG apply -f train-schedule-kube-prod.yml
+                        '''
+                    }
                 }
             }
         }
