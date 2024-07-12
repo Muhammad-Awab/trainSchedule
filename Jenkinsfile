@@ -2,21 +2,10 @@ pipeline {
     agent any
     environment {
         // Be sure to replace "willbla" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "willbla/train-schedule"
+        DOCKER_IMAGE_NAME = "awab82002/maven"
     }
-    tools {
-        // Use the JDK installation name configured in Jenkins
-        jdk 'Java 11'
-    }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Running build automation'
-                sh 'chmod +x ./gradlew'
-                sh './gradlew build --no-daemon'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
-            }
-        }
+  
+    
         stage('Build Docker Image') {
             when {
                 branch 'master'
