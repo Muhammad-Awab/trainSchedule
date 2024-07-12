@@ -1,18 +1,17 @@
 pipeline {
     agent any
     environment {
-        // Be sure to replace "willbla" with your own Docker Hub username
+        // Be sure to replace "awab82002" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "awab82002/maven"
     }
-  
-    
+    stages {
         stage('Build Docker Image') {
             when {
                 branch 'master'
             }
             steps {
                 script {
-                    app = docker.build(DOCKER_IMAGE_NAME)
+                    def app = docker.build(DOCKER_IMAGE_NAME)
                     app.inside {
                         sh 'echo Hello, World!'
                     }
@@ -40,11 +39,13 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
+                script {
+                    kubernetesDeploy(
+                        kubeconfigId: 'kubeconfig',
+                        configs: 'train-schedule-kube-canary.yml',
+                        enableConfigSubstitution: true
+                    )
+                }
             }
         }
         stage('DeployToProduction') {
@@ -55,18 +56,20 @@ pipeline {
                 CANARY_REPLICAS = 0
             }
             steps {
-                input 'Deploy to Production?'
-                milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube.yml',
-                    enableConfigSubstitution: true
-                )
+                script {
+                    input 'Deploy to Production?'
+                    milestone(1)
+                    kubernetesDeploy(
+                        kubeconfigId: 'kubeconfig',
+                        configs: 'train-schedule-kube-canary.yml',
+                        enableConfigSubstitution: true
+                    )
+                    kubernetesDeploy(
+                        kubeconfigId: 'kubeconfig',
+                        configs: 'train-schedule-kube.yml',
+                        enableConfigSubstitution: true
+                    )
+                }
             }
         }
     }
