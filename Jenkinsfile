@@ -39,7 +39,7 @@ pipeline {
                     echo 'Performing canary deployment...'
                     // Load Kubernetes configuration from secrets
                     withCredentials([file(credentialsId: 'kubecon', variable: 'KUBECONFIG')]) {
-                        withAWS(credentials: 'your-aws-credentials-id', region: 'us-east-1') {
+                        withAWS(credentials: 'awscred', region: 'us-east-1') {
                             sh 'env' // Print environment variables for debugging
                             sh 'cat $KUBECONFIG' // Print kubeconfig file content for debugging
                             sh 'kubectl get ns'
