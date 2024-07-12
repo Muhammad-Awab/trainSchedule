@@ -16,9 +16,9 @@ pipeline {
         
         stage('Push Image'){
             steps{
-                withCredentials([string(credentialsId: 'HubPWd', variable: 'HubPWd')]) {
+                withCredentials([string(credentialsId: 'DPWD', variable: 'DPWD')]) {
                    sh """
-                   echo \${HubPWd} | docker login -u 82002 --password-stdin
+                   echo \${DPWD} | docker login -u 82002 --password-stdin
                    """
                  }
                
