@@ -1,38 +1,33 @@
 pipeline {
     agent any
-    environment {
-        DOCKER_IMAGE_NAME = "awab82002/maven"
-        DOCKER_REGISTRY = "https://registry.hub.docker.com"
+    
+    tools {
+        maven 'Maven'
+        // Add Docker tool definition if not already configured
+        // docker 'Docker'
     }
+    
     stages {
-        stage('Checkout') {
+        stage('GetCode') {
             steps {
-                git 'https://github.com/Muhammad-Awab/trainSchedule.git'
+                git branch: 'master', url: 'https://github.com/Muhammad-Awab/java_maven.git'
             }
         }
-        stage('Build Docker Image') {
-            when {
-                branch 'master'
+        stage('BuildDockerImage'){
+            steps{
+                sh 'docker image build -t awab82002/maven:latest'
             }
-            steps {
-                script {
-                    def app = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}")
+        }
+         stage('Push Image'){
+            steps{
+                withCredentials([string(credentialsId: 'HubPWd', variable: 'HubPWd')]) {
+                sh "docker login -u 82002 -p ${HubPWd}"
                 }
+                sh 'docker push awab82002/sonar-image:latest'
             }
         }
-        stage('Push Docker Image') {
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    docker.withRegistry(DOCKER_REGISTRY, 'docker_hub_login') {
-                        docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
-                        docker.image("${DOCKER_IMAGE_NAME}:latest").push()
-                    }
-                }
-            }
-        }
+        
+
         stage('CanaryDeploy') {
             when {
                 branch 'master'
@@ -50,6 +45,7 @@ pipeline {
                 }
             }
         }
+        
         stage('DeployToProduction') {
             when {
                 branch 'master'
@@ -75,6 +71,7 @@ pipeline {
             }
         }
     }
+    
     post {
         always {
             echo 'Cleaning up...'
